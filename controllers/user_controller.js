@@ -1,6 +1,35 @@
 const User = require("../models/user");
 const redis = require("../config/redis");
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth:{
+    user: process.env.email,
+    pass : process.env.password
+  }
+});
+
+const sendMail = (receiversEmail)=>{
+  const mailOptions = {
+    from: 'ashisdutube@gmail.com',
+    to: receiversEmail,
+    subject: 'Welcome to Our JWT Authenticator Project!',
+    text: 'If you like my work please give a star in Github!',
+  };
+
+
+  transporter.sendMail(mailOptions, (error,info)=>{
+    if(error){
+      console.log('Error:',error);
+    }
+    else{
+      console.log('Email Sent:', info.response);
+    }
+  })
+  
+}
 // Creating User
 module.exports.create = async (req, res) => {
   try {
@@ -45,6 +74,7 @@ module.exports.profile = async (req, res) => {
       console.log("Cannot find User!");
       return res.redirect("/");
     }
+    sendMail(user.email);
     return res.render("profile", {
       user,
     });

@@ -2,16 +2,14 @@ const express               = require('express');
 const app                   = express();
 const db                    = require('./config/mongoose');
 const path                  = require('path')
+const nodemailer            = require('nodemailer');
 
-const passport = require('passport');
+
 
 app.use(express.urlencoded({extended:true}));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
-
-app.use(passport.initialize());
 
 // Routes
 app.use('/', require('./routes'));
