@@ -1,11 +1,9 @@
 const express               = require('express');
 const app                   = express();
 const db                    = require('./config/mongoose');
-const path                  = require('path');
+const path                  = require('path')
 
 const passport = require('passport');
-const passportJWT = require('./config/passport-jwt-strategy')
-
 
 app.use(express.urlencoded({extended:true}));
 
@@ -14,7 +12,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 
 app.use(passport.initialize());
-// app.use(passport.session());
+
 // Routes
 app.use('/', require('./routes'));
 

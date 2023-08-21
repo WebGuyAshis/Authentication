@@ -1,7 +1,7 @@
 const User = require("../models/user");
-const passport = require("passport");
-const jwtWebToken = require("jsonwebtoken");
+const redis = require("../config/redis");
 
+// Creating User
 module.exports.create = async (req, res) => {
   try {
     const user = await User.findOne({
@@ -29,41 +29,42 @@ module.exports.create = async (req, res) => {
   }
 };
 
-module.exports.profile = async (req, res) => {
-  return res.render("profile", {
-    user: req.user,
-  });
-};
-
-module.exports.createSession = async (req, res) => {
-    console.log("Req in Session:", req);
-  console.log("Succseefully Logged In!");
+// Login
+module.exports.login = (req, res) => {
   return res.redirect("/users/profile");
 };
 
-// Token Generator,
-module.exports.genrateToken = async (req, res, next) => {
-  try {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) {
-      return res.send("User doesnt exist");
-    }
-    const webToken = await jwtWebToken.sign(
-      { _id: user.id },
-      process.env.jwtSecret,
-      {
-        expiresIn: "1h",
-        issuer: "Jwt Authenticator",
-        audience: "http://127.0.0.1:8000/",
-      }
-    );
-    console.log("Token:", webToken);
-    // Set the token in the Authorization header
-    req.headers.authorization = `Bearer ${webToken}`;
-    console.log('request headers having bearer token: ',req.headers.authorization);
-    next();
 
+// Show Profile
+module.exports.profile = async (req, res) => {
+
+  let userId = req.userId;
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      console.log("Cannot find User!");
+      return res.redirect("/");
+    }
+    return res.render("profile", {
+      user,
+    });
   } catch (error) {
-    console.log("Error Generating Token!", err);
+    console.log("Error Finding User");
+    return res.redirect("back");
   }
 };
+
+
+
+// Logout
+module.exports.logout = async(req,res)=>{
+  try {
+    let key = 'jwtToken'
+    await redis.del(key);
+    console.log("Logged Out SuccessFully");
+    return res.redirect('/')
+  } catch (error) {
+    console.log("Error Logging Out!",error);
+    return res.redirect('/');
+  }
+}
