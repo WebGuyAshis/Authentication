@@ -18,9 +18,8 @@
 const Redis = require("ioredis");
 
 const redis = new Redis({
-    host: "singapore-redis.render.com", // Correct hostname
-    port: 6379,
-    password: "zc4KOc4h3qwx9ES8lgWgKg9dWfFwdLE9" // Auth password
+    host: "red-cjhpsl36fquc73et94v0",
+    port: 6379
 });
 
 redis.once('connect', () => {
